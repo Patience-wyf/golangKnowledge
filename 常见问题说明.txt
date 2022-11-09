@@ -1,0 +1,13 @@
+1.string和[]byte类型转换。
+type byte = uint8
+string的定义：
+// string is the set of all strings of 8-bit bytes, conventionally but not
+// necessarily representing UTF-8-encoded text. A string may be empty, but
+// not nil. Values of string type are immutable.
+byte是uint8的别名，它是用来区分字节值和8位无符号整数值，可以把byte当做是ASCII码中的一个字符。
+string本质也是一个结构体，定义如下：
+type stringStruct struct {
+    str unsafe.Pointer    str指针指向的是某个数组的首地址
+    len int               代表数组的长度
+}
+string类型底层是一个byte类型的数组。
