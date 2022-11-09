@@ -1,13 +1,23 @@
 1.string和[]byte类型转换。
 type byte = uint8
-string的定义：
-// string is the set of all strings of 8-bit bytes, conventionally but not
-// necessarily representing UTF-8-encoded text. A string may be empty, but
-// not nil. Values of string type are immutable.
+    string的定义：
+    // string is the set of all strings of 8-bit bytes, conventionally but not
+    // necessarily representing UTF-8-encoded text. A string may be empty, but
+    // not nil. Values of string type are immutable.
+string是一个8位字节的集合，通常但不一定代表UTF-8编码的文字。string可以为空，但是不能为nil，string的值是不能改变的。
 byte是uint8的别名，它是用来区分字节值和8位无符号整数值，可以把byte当做是ASCII码中的一个字符。
 string本质也是一个结构体，定义如下：
 type stringStruct struct {
     str unsafe.Pointer    str指针指向的是某个数组的首地址
     len int               代表数组的长度
 }
-string类型底层是一个byte类型的数组。
+string类型底层是一个byte类型的数组，那么为什么在数组的基础上再进行一次封装呢？
+    在go语言中string类型被设置成不可变的，这样的好处是：在并发场景下可以在不加锁的控制下，多次使用同一个字符串，在保证高效共享的情况下而不担心安全问题。
+string类型虽然是不能更改，但是可以被替换，因为stringStruct中的str指针是可以改变的，只是指针指向的内容是不可以改变的。    
+##########################################################################
+string和[]byte标准转换
+  I、string类型转换到[]byte类型
+  通过字符串长度来决定是否需要重新分配一块内存，预先定义了一个长度为32的数组，字符串长度超过了这个数组的长度，就说明[]byte不够用了，需要重新分配一块内存，只有超过32才会进行内存分配。
+最后调用copy方法实现string到[]byte的拷贝。核心思路就是：将string的底层数组从头部复制n个到[]byte对应的底层数组中去。
+  II、[]byte类型转换到string
+  
